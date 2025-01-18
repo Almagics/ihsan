@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:ihsan/persentation/Main/inventory_view.dart';
 import 'package:ihsan/persentation/forget_password/forget_password_view.dart';
 import 'package:ihsan/persentation/login/login_View.dart';
+import 'package:ihsan/persentation/login/otp_view.dart';
 
 import 'package:ihsan/persentation/register/register_view.dart';
+import 'package:ihsan/persentation/scan/scan_barcode.dart';
+import 'package:ihsan/persentation/scan/scan_result_view.dart';
 import 'package:ihsan/persentation/splash/splashView_view.dart';
 
 
@@ -28,6 +31,12 @@ class MyApp extends StatelessWidget {
         'register': (context) => const RegisterView(),
 
         'inventory': (context) =>  InventoryScreen(),
+
+        'otp': (context) =>  VerificationScreen(),
+
+        'scanReuslt': (context) =>  ScanResultScreen(),
+
+        'scan': (context) =>  BarcodeScannerScreen(),
       },
     );
   }

@@ -87,6 +87,19 @@ class InventoryScreen extends StatelessWidget {
         selectedItemColor: Colors.orange,
 
         unselectedItemColor: Colors.white.withOpacity(0.5),
+        onTap: (index) {
+          if (index == 0) {
+
+            Navigator.pushReplacementNamed(context, 'inventory');
+
+          } else if (index == 3) {
+            Navigator.pushReplacementNamed(context, 'scanReuslt');
+          }else if (index == 1) {
+            Navigator.pushReplacementNamed(context, 'scan');
+          }
+          // Add logic for other items if needed
+        },
+
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add item'),

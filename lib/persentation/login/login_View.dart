@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../Services/api_service.dart';
+
 
 
 
@@ -13,10 +15,46 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-//  final FirebaseAuthService _auth = FirebaseAuthService();
-  final emailController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final data = await ApiService.loginUser(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // If successful, data might contain {"access_token": "...", "token_type": "bearer"}
+      print("Login success: $data");
+      Navigator.pushReplacementNamed(context, 'inventory');
+
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+      print("Login error: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
 
   @override
@@ -56,6 +94,7 @@ class _LoginViewState extends State<LoginView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
+                controller: _emailController,
                 style: const TextStyle(color: Colors.black), // Text color
                 decoration: InputDecoration(
                   hintText: 'Username',
@@ -83,6 +122,7 @@ class _LoginViewState extends State<LoginView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
+                controller: _passwordController,
                 obscureText: true,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
@@ -107,8 +147,11 @@ class _LoginViewState extends State<LoginView> {
             ),
             const SizedBox(height: 30),
 
-            // Log In Button
-            Padding(
+
+
+            _isLoading
+                ? const CircularProgressIndicator()
+                :   Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -120,7 +163,8 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'inventory');
+                 // Navigator.pushReplacementNamed(context, 'otp');
+                  _login();
                 },
                 child: const Text(
                   'Log In',
@@ -128,6 +172,14 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
             ),
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 20),
+              Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+            ],
+
+
+            // Log In Button
+
 
             // Forgot Password Link
             TextButton(

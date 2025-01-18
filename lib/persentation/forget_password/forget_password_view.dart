@@ -82,7 +82,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
               },
               child: Text('Submit'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.orange, // Button color
+                //primary: Colors.orange, // Button color
               ),
             ),
 

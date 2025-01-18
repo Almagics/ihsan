@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../Services/api_service.dart';
+
 
 
 class RegisterView extends StatefulWidget {
@@ -10,6 +12,62 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
+
+
+
+  final _emailController = TextEditingController();
+  final _fullNameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<void> _register() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final responseData = await ApiService.registerUser(
+        email: _emailController.text.trim(),
+        fullName: _fullNameController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // If successful, navigate to the login screen
+      Navigator.pushReplacementNamed(context, 'login');
+
+      // OR if you prefer to go directly to 'home':
+      // Navigator.pushReplacementNamed(context, 'home');
+
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
+
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _fullNameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,9 +105,10 @@ class _RegisterViewState extends State<RegisterView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
+                controller: _fullNameController,
                 style: const TextStyle(color: Colors.black), // Text color
                 decoration: InputDecoration(
-                  hintText: 'Username',
+                  hintText: 'Full Name',
                   hintStyle: TextStyle(
                     color: Colors.amber.shade700, // Yellow hint text
                     fontWeight: FontWeight.bold,
@@ -75,6 +134,7 @@ class _RegisterViewState extends State<RegisterView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
+                controller: _emailController,
                 style: const TextStyle(color: Colors.black), // Text color
                 decoration: InputDecoration(
                   hintText: 'Email',
@@ -101,6 +161,7 @@ class _RegisterViewState extends State<RegisterView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
+                controller: _passwordController,
                 obscureText: true,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
@@ -125,8 +186,9 @@ class _RegisterViewState extends State<RegisterView> {
             ),
             const SizedBox(height: 30),
 
-            // Log In Button
-            Padding(
+            _isLoading
+                ? const CircularProgressIndicator()
+                :  Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -138,7 +200,7 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                 ),
                 onPressed: () {
-                  // Login button logic
+                 _register();
                 },
                 child: const Text(
                   'Sign Up',
@@ -146,9 +208,27 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
             ),
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 20),
+              Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ],
+
+
+
+
+
+
+            // Log In Button
+
 
             // Forgot Password Link
             TextButton(
+
+
+
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'login');
               },
