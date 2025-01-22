@@ -1,10 +1,6 @@
-
-
 import 'package:flutter/material.dart';
-
 import '../../Services/api_service.dart';
-
-
+import '../otp/otp_screen.dart';
 
 
 class LoginView extends StatefulWidget {
@@ -33,15 +29,22 @@ class _LoginViewState extends State<LoginView> {
         password: _passwordController.text.trim(),
       );
 
-      // If successful, data might contain {"access_token": "...", "token_type": "bearer"}
-      print("Login success: $data");
-      Navigator.pushReplacementNamed(context, 'inventory');
-
+      if (data["requires_otp"] == true) {
+        // 🚀 Redirect to OTP verification screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OTPScreen(email: _emailController.text.trim()),
+          ),
+        );
+      } else {
+        // ✅ Successful login, navigate to inventory screen
+        Navigator.pushReplacementNamed(context, 'inventory');
+      }
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
       });
-      print("Login error: $e");
     } finally {
       setState(() {
         _isLoading = false;
@@ -56,11 +59,9 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
@@ -71,7 +72,7 @@ class _LoginViewState extends State<LoginView> {
               width: double.infinity,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/groceries.jpeg'), // Place the image in assets
+                  image: AssetImage('assets/images/groceries.jpeg'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -90,21 +91,21 @@ class _LoginViewState extends State<LoginView> {
             ),
             const SizedBox(height: 30),
 
-            // Username Input Field
+            // Email Input Field
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
                 controller: _emailController,
-                style: const TextStyle(color: Colors.black), // Text color
+                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
-                  hintText: 'Username',
+                  hintText: 'Email',
                   hintStyle: TextStyle(
-                    color: Colors.amber.shade700, // Yellow hint text
+                    color: Colors.amber.shade700,
                     fontWeight: FontWeight.bold,
                   ),
                   filled: true,
                   fillColor: Colors.white,
-                  prefixIcon: const Icon(Icons.person, color: Colors.grey),
+                  prefixIcon: const Icon(Icons.email, color: Colors.grey),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide: const BorderSide(color: Colors.grey),
@@ -128,7 +129,7 @@ class _LoginViewState extends State<LoginView> {
                 decoration: InputDecoration(
                   hintText: 'Password',
                   hintStyle: TextStyle(
-                    color: Colors.amber.shade700, // Yellow hint text
+                    color: Colors.amber.shade700,
                     fontWeight: FontWeight.bold,
                   ),
                   filled: true,
@@ -147,11 +148,10 @@ class _LoginViewState extends State<LoginView> {
             ),
             const SizedBox(height: 30),
 
-
-
+            // Login Button
             _isLoading
                 ? const CircularProgressIndicator()
-                :   Padding(
+                : Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -162,10 +162,7 @@ class _LoginViewState extends State<LoginView> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                onPressed: () {
-                 // Navigator.pushReplacementNamed(context, 'otp');
-                  _login();
-                },
+                onPressed: _login,
                 child: const Text(
                   'Log In',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -177,11 +174,7 @@ class _LoginViewState extends State<LoginView> {
               Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
             ],
 
-
-            // Log In Button
-
-
-            // Forgot Password Link
+            // Create New Account Link
             TextButton(
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'register');
@@ -195,6 +188,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
             ),
+
             // Forgot Password Link
             TextButton(
               onPressed: () {
@@ -212,22 +206,6 @@ class _LoginViewState extends State<LoginView> {
           ],
         ),
       ),
-        );
-
-
+    );
   }
-
-
-
-
-
-
-
-
-
-
 }
-
-
-
-
